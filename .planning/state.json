@@ -1,0 +1,18 @@
+{
+  "contract": "1.0.0",
+  "flavor": "core",
+  "milestone": null,
+  "phases": [
+    {
+      "number": "1",
+      "name": "Исследование конкурентов, UX и дизайн-система",
+      "status": "in_progress"
+    }
+  ],
+  "next": {
+    "command": "$gsd-progress --next",
+    "label": "Advance to the next step",
+    "reason": "Phase 1 of 1 · 0% · executing"
+  },
+  "updated_at": "2026-11-09T16:25:59.600Z"
+}
