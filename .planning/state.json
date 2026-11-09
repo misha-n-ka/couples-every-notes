@@ -6,13 +6,13 @@
     {
       "number": "1",
       "name": "Исследование конкурентов, UX и дизайн-система",
-      "status": "in_progress"
+      "status": "complete"
     }
   ],
   "next": {
-    "command": "$gsd-progress --next",
-    "label": "Advance to the next step",
-    "reason": "Phase 1 of 1 · 0% · executing"
+    "command": "$gsd-progress",
+    "label": "Итоговый просмотр design.md",
+    "reason": "Документальная фаза завершена; рекомендации ожидают просмотра пользователя. План реализации — отдельное поручение."
   },
-  "updated_at": "2026-11-09T16:25:59.600Z"
+  "updated_at": "2026-11-09T16:44:13Z"
 }
