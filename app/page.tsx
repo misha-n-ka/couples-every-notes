@@ -46,6 +46,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -56,14 +66,20 @@ import { Input } from "@/components/ui/input"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Textarea } from "@/components/ui/textarea"
 import { Toaster, toast } from "@/components/ui/toast"
+import {
+  isMineNote,
+  isTimedScheduleValid,
+  isVisibilityExpansion,
+  type NoteAuthor,
+  type NoteVisibility,
+  type Schedule,
+} from "@/lib/notes"
 
 type Section = "home" | "notes" | "events"
 type NotesTab = "shared" | "mine" | "partner"
-type Visibility = "shared" | "partner" | "private"
+type Visibility = NoteVisibility
 type Topic = "Подарки" | "Еда" | "Хобби" | "Фильмы и сериалы"
-type Author = "me" | "partner"
-
-type Schedule = { allDay: boolean; date: string; start?: string; end?: string }
+type Author = NoteAuthor
 
 type Note = {
   id: string
@@ -157,6 +173,8 @@ const initialNotes: Note[] = [
   },
 ]
 
+const demoToday = new Date(2026, 10, 15)
+
 const navItems: { id: Section; label: string; icon: LucideIcon }[] = [
   { id: "home", label: "Главная", icon: Home },
   { id: "notes", label: "Заметки", icon: NotebookPen },
@@ -181,14 +199,26 @@ function AccessBadge({ visibility }: { visibility: Visibility }) {
 }
 
 function formatEventDate(schedule: Schedule) {
-  const date = new Date(`${schedule.date}T00:00:00`)
-  const day = date.toLocaleDateString("ru-RU", {
-    day: "2-digit",
-    month: "short",
+  const formatDay = (value: string) =>
+    new Date(`${value}T00:00:00`).toLocaleDateString("ru-RU", {
+      day: "2-digit",
+      month: "short",
+    })
+  const startDay = formatDay(schedule.date)
+  if (schedule.allDay) return `${startDay}, весь день`
+  const endDay = formatDay(schedule.endDate ?? schedule.date)
+  return startDay === endDay
+    ? `${startDay}, ${schedule.start}–${schedule.end}`
+    : `${startDay}, ${schedule.start}–${endDay}, ${schedule.end}`
+}
+
+function formatDemoDate(date: Date) {
+  const value = date.toLocaleDateString("ru-RU", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
   })
-  return schedule.allDay
-    ? `${day}, весь день`
-    : `${day}, ${schedule.start}–${schedule.end}`
+  return value.charAt(0).toUpperCase() + value.slice(1)
 }
 
 function dateKey(date: Date) {
@@ -267,7 +297,11 @@ function NoteCard({
       tabIndex={0}
       onClick={onOpen}
       onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") onOpen()
+        if (event.target !== event.currentTarget) return
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault()
+          onOpen()
+        }
       }}
       className={`${note.color} border-0 shadow-none`}
     >
@@ -455,9 +489,22 @@ function AddNoteDialog({
     editingNote?.schedule?.allDay ?? false
   )
   const [date, setDate] = React.useState(editingNote?.schedule?.date ?? "")
+  const [endDate, setEndDate] = React.useState(
+    editingNote?.schedule?.endDate ?? editingNote?.schedule?.date ?? ""
+  )
   const [start, setStart] = React.useState(editingNote?.schedule?.start ?? "")
   const [end, setEnd] = React.useState(editingNote?.schedule?.end ?? "")
   const [error, setError] = React.useState("")
+  const [pendingVisibility, setPendingVisibility] = React.useState<Visibility>()
+
+  const handleVisibilityChange = (value: string) => {
+    const nextVisibility = value as Visibility
+    if (isVisibilityExpansion(visibility, nextVisibility)) {
+      setPendingVisibility(nextVisibility)
+      return
+    }
+    setVisibility(nextVisibility)
+  }
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -466,7 +513,7 @@ function AddNoteDialog({
     if (
       withEvent &&
       !allDay &&
-      (!start || !end || `${date}T${end}` <= `${date}T${start}`)
+      !isTimedScheduleValid({ allDay, date, endDate, start, end })
     )
       return setError("Для события укажите начало и окончание позже начала.")
     onSave({
@@ -476,7 +523,7 @@ function AddNoteDialog({
       topic,
       visibility,
       schedule: withEvent
-        ? { allDay, date, ...(allDay ? {} : { start, end }) }
+        ? { allDay, date, ...(allDay ? {} : { endDate, start, end }) }
         : undefined,
     })
     onOpenChange(false)
@@ -545,7 +592,7 @@ function AddNoteDialog({
             <p className="text-sm font-medium">Кто увидит заметку?</p>
             <RadioGroup
               value={visibility}
-              onValueChange={(value) => setVisibility(value as Visibility)}
+              onValueChange={handleVisibilityChange}
               className="grid gap-2 sm:grid-cols-3"
             >
               {(["shared", "partner", "private"] as Visibility[]).map(
@@ -572,7 +619,7 @@ function AddNoteDialog({
           {withEvent && (
             <div className="grid gap-3 rounded-2xl bg-muted/60 p-3">
               <label className="grid gap-1.5 text-sm font-medium">
-                Дата
+                Дата начала
                 <input
                   type="date"
                   value={date}
@@ -580,6 +627,17 @@ function AddNoteDialog({
                   className="h-9 rounded-2xl border border-input bg-white px-3 text-sm"
                 />
               </label>
+              {!allDay && (
+                <label className="grid gap-1.5 text-sm font-medium">
+                  Дата окончания
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(event) => setEndDate(event.target.value)}
+                    className="h-9 rounded-2xl border border-input bg-white px-3 text-sm"
+                  />
+                </label>
+              )}
               <label className="flex items-center gap-2 text-sm">
                 <input
                   type="checkbox"
@@ -635,6 +693,33 @@ function AddNoteDialog({
           </DialogFooter>
         </form>
       </DialogContent>
+      <AlertDialog
+        open={Boolean(pendingVisibility)}
+        onOpenChange={(nextOpen) => {
+          if (!nextOpen) setPendingVisibility(undefined)
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Открыть заметку партнёру?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Партнёр получит доступ к этой заметке в режиме «
+              {pendingVisibility ? visibilityLabels[pendingVisibility] : ""}».
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Отмена</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (pendingVisibility) setVisibility(pendingVisibility)
+                setPendingVisibility(undefined)
+              }}
+            >
+              Открыть доступ
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   )
 }
@@ -644,7 +729,7 @@ export default function Page() {
   const [notesTab, setNotesTab] = React.useState<NotesTab>("shared")
   const [notes, setNotes] = React.useState<Note[]>(initialNotes)
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(
-    new Date(2026, 10, 15)
+    demoToday
   )
   const [dialogOpen, setDialogOpen] = React.useState(false)
   const [editingNote, setEditingNote] = React.useState<Note | undefined>()
@@ -666,7 +751,7 @@ export default function Page() {
   const sharedNotes = visibleNotes.filter(
     (note) => note.visibility === "shared"
   )
-  const mineNotes = visibleNotes.filter((note) => note.author === "me")
+  const mineNotes = visibleNotes.filter(isMineNote)
   const partnerNotes = visibleNotes.filter(
     (note) => note.author === "partner" && note.visibility !== "private"
   )
@@ -815,7 +900,7 @@ export default function Page() {
               </Button>
               <div>
                 <p className="text-xs text-muted-foreground">
-                  Пятница, 15 ноября
+                  {formatDemoDate(demoToday)}
                 </p>
                 <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
                   {currentTitle}
@@ -1043,6 +1128,7 @@ export default function Page() {
                       <Calendar
                         className="calendar-wide mx-auto w-full max-w-[720px]"
                         mode="single"
+                        required
                         locale={ru}
                         selected={selectedDate}
                         onSelect={setSelectedDate}
@@ -1062,10 +1148,12 @@ export default function Page() {
                       <CardTitle>События на выбранную дату</CardTitle>
                       <CardDescription>
                         Москва ·{" "}
-                        {selectedDate?.toLocaleDateString("ru-RU", {
-                          day: "numeric",
-                          month: "long",
-                        })}
+                        {selectedDate
+                          ? selectedDate.toLocaleDateString("ru-RU", {
+                              day: "numeric",
+                              month: "long",
+                            })
+                          : "дата не выбрана"}
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="grid gap-3">
