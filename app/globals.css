@@ -1,1 +1,101 @@
 @import "tailwindcss";
+
+:root {
+  --background: #fbf8f5;
+  --foreground: #302b38;
+  --card: #ffffff;
+  --card-foreground: #302b38;
+  --popover: #ffffff;
+  --popover-foreground: #302b38;
+  --primary: #70579c;
+  --primary-foreground: #ffffff;
+  --secondary: #ede6f7;
+  --secondary-foreground: #604887;
+  --muted: #f2eef7;
+  --muted-foreground: #665f6f;
+  --accent: #fae4d7;
+  --accent-foreground: #6d4335;
+  --destructive: #a33147;
+  --border: #e6dfe7;
+  --input: #e6dfe7;
+  --ring: #70579c;
+  --radius: 1rem;
+  --lavender: #ede6f7;
+  --apricot: #fae4d7;
+  --rose: #fbe9ed;
+  --sage: #e3eee8;
+  --sky: #e8ebf7;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-lavender: var(--lavender);
+  --color-apricot: var(--apricot);
+  --color-rose: var(--rose);
+  --color-sage: var(--sage);
+  --color-sky: var(--sky);
+  --radius-sm: calc(var(--radius) - 8px);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-4xl: calc(var(--radius) + 16px);
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.calendar-wide .rdp-day {
+  height: 3rem;
+  aspect-ratio: auto;
+}
+
+.calendar-wide .rdp-day_button {
+  height: 2.5rem;
+  max-width: 3.5rem;
+  width: 100%;
+  margin-inline: auto;
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+.calendar-wide .rdp-week {
+  margin-top: 0.25rem;
+}
+
+.calendar-wide .rdp-today {
+  background: transparent !important;
+}
+
+.calendar-wide .rdp-day_button:hover,
+.calendar-wide .rdp-day_button:focus {
+  box-shadow: none;
+}
+
+.calendar-wide .rdp-day_button[data-selected-single="true"]:hover {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
