@@ -58,3 +58,13 @@
 - Перед параллельным исследованием основной агент обновляет индекс; агентам в режиме без изменений поручаются только запросы. Каждый worktree использует собственный индекс.
 - Индекс находится в локальном кеше вне репозитория. Не добавляй базу индекса или абсолютные пути локального кеша в отслеживаемые файлы. Пока в проекте нет исходников, пустой индекс ожидаем.
 - `ast-index` дополняет GSD через эти инструкции; встроенные `intel` и `graphify` выключены. Для проверки упомянутых в планах символов сохраняется штатный `plan_review.source_grounding_authority: grep`: адаптер `ast-index` в установленном GSD отсутствует.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
