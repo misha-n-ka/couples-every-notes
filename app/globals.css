@@ -8,8 +8,12 @@
   --popover: #ffffff;
   --popover-foreground: #302b38;
   --primary: #70579c;
+  --primary-hover: #604887;
+  --primary-pressed: #513b75;
   --primary-foreground: #ffffff;
   --secondary: #ede6f7;
+  --secondary-hover: #e4d9f3;
+  --secondary-pressed: #d9c8ee;
   --secondary-foreground: #604887;
   --muted: #f2eef7;
   --muted-foreground: #665f6f;
@@ -20,6 +24,19 @@
   --input: #e6dfe7;
   --ring: #70579c;
   --radius: 1rem;
+  --radius-control: 0.75rem;
+  --radius-card: 1.5rem;
+  --radius-pill: 999px;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --shadow-card:
+    0 1px 2px rgb(48 43 56 / 0.06), 0 8px 24px rgb(48 43 56 / 0.04);
+  --shadow-card-hover: 0 8px 20px -12px rgb(48 43 56 / 0.32);
+  --shadow-card-pressed: 0 2px 8px -6px rgb(48 43 56 / 0.28);
   --lavender: #ede6f7;
   --apricot: #fae4d7;
   --rose: #fbe9ed;
@@ -35,8 +52,12 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-pressed: var(--primary-pressed);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
+  --color-secondary-hover: var(--secondary-hover);
+  --color-secondary-pressed: var(--secondary-pressed);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
@@ -66,6 +87,41 @@
 body {
   background: var(--background);
   color: var(--foreground);
+}
+
+[data-slot="button"] {
+  transition:
+    transform 150ms ease,
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    color 150ms ease;
+}
+
+[data-slot="button"]:not(:disabled):active {
+  transform: translateY(1px);
+}
+
+.interactive-surface {
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease,
+    border-color 150ms ease;
+}
+
+.interactive-surface:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.interactive-surface:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-card-pressed);
+}
+
+.interactive-surface:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
 }
 
 .calendar-wide .rdp-day {
