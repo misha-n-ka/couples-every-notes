@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { ru } from "date-fns/locale"
+import { useTheme } from "next-themes"
 import type { LucideIcon } from "lucide-react"
 import {
   CalendarDays,
@@ -16,10 +17,12 @@ import {
   Link as LinkIcon,
   LockKeyhole,
   MoreHorizontal,
+  Moon,
   NotebookPen,
   PartyPopper,
   Search,
   Sparkles,
+  Sun,
   Trash2,
   Users,
 } from "lucide-react"
@@ -190,7 +193,7 @@ function AccessBadge({ visibility }: { visibility: Visibility }) {
   return (
     <Badge
       variant="outline"
-      className="gap-1 rounded-full bg-white/65 text-xs font-medium"
+      className="gap-1 rounded-full bg-card/65 text-xs font-medium"
     >
       {visibility === "private" ? (
         <LockKeyhole className="size-3" />
@@ -239,7 +242,7 @@ function EventRow({ note, onOpen }: { note: Note; onOpen?: () => void }) {
     <button
       type="button"
       onClick={onOpen}
-      className="interactive-surface flex min-w-0 w-full flex-wrap items-center gap-3 rounded-2xl border border-border/70 bg-white/75 p-3 text-left hover:border-primary/40 hover:bg-lavender/30"
+      className="interactive-surface flex min-w-0 w-full flex-wrap items-center gap-3 rounded-2xl border border-border/70 bg-card/75 p-3 text-left hover:border-primary/40 hover:bg-lavender/30"
     >
       <div className={`size-2.5 rounded-full ${note.color}`} />
       <div className="min-w-0 flex-1">
@@ -278,6 +281,28 @@ function EventCalendarDayButton({
   )
 }
 
+function ThemeToggle() {
+  const { resolvedTheme, setTheme } = useTheme()
+  const mounted = React.useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  )
+  const isDark = mounted && resolvedTheme === "dark"
+
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      className="rounded-full"
+      aria-label={isDark ? "Включить светлую тему" : "Включить тёмную тему"}
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+    >
+      {isDark ? <Sun className="size-4" /> : <Moon className="size-4" />}
+    </Button>
+  )
+}
+
 function NoteCard({
   note,
   canEdit,
@@ -311,7 +336,7 @@ function NoteCard({
     >
       <CardHeader className="gap-4 pb-3">
         <div className="flex items-start justify-between gap-3">
-          <div className="flex size-10 items-center justify-center rounded-2xl bg-white/70 text-primary">
+          <div className="flex size-10 items-center justify-center rounded-2xl bg-card/70 text-primary">
             <Icon className="size-5" />
           </div>
           <DropdownMenu>
@@ -320,7 +345,7 @@ function NoteCard({
                 <Button
                   variant="ghost"
                   size="icon-sm"
-                  className="rounded-full hover:bg-white/50"
+                  className="rounded-full hover:bg-card/50"
                   onClick={(event) => event.stopPropagation()}
                   onKeyDown={(event) => event.stopPropagation()}
                 />
@@ -370,7 +395,7 @@ function NoteCard({
         </div>
       </CardHeader>
       <CardContent className="flex flex-wrap items-center justify-between gap-2 pt-0">
-        <Badge className="rounded-full bg-white/70 text-foreground hover:bg-white/80">
+        <Badge className="rounded-full bg-card/70 text-foreground hover:bg-card/80">
           {note.topic}
         </Badge>
         <AccessBadge visibility={note.visibility} />
@@ -477,7 +502,7 @@ function DateField({
           <Button
             type="button"
             variant="outline"
-            className="h-9 w-full justify-between rounded-2xl bg-white px-3 font-normal"
+            className="h-9 w-full justify-between rounded-2xl bg-card px-3 font-normal"
           />
         }
       >
@@ -901,7 +926,7 @@ export default function Page() {
   return (
     <Toaster>
       <div className="min-h-svh bg-background text-foreground">
-        <aside className="fixed inset-y-0 left-0 z-20 hidden w-[216px] flex-col border-r border-border/70 bg-white/60 px-5 py-6 lg:flex">
+        <aside className="fixed inset-y-0 left-0 z-20 hidden w-[216px] flex-col border-r border-border/70 bg-card/60 px-5 py-6 lg:flex">
           <div className="mb-10 flex items-center gap-3 px-2">
             <div className="flex size-10 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
               <Heart className="size-5 fill-current" />
@@ -947,6 +972,7 @@ export default function Page() {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <ThemeToggle />
               <Button
                 variant="ghost"
                 size="icon"
@@ -980,7 +1006,7 @@ export default function Page() {
                 <section className="grid gap-5 rounded-[28px] bg-gradient-to-br from-lavender to-apricot p-6 sm:p-8 lg:grid-cols-[1.3fr_0.7fr]">
                   <div className="flex flex-col justify-between gap-8">
                     <div>
-                      <Badge className="mb-4 rounded-full bg-white/70 text-primary hover:bg-white/80">
+                      <Badge className="mb-4 rounded-full bg-card/70 text-primary hover:bg-card/80">
                         <Heart className="mr-1 size-3 fill-current" />
                         Ваше пространство
                       </Badge>
@@ -1001,7 +1027,7 @@ export default function Page() {
                     </Button>
                   </div>
                   <div className="hidden items-end justify-end lg:flex">
-                    <div className="flex size-44 items-center justify-center rounded-full bg-white/45">
+                    <div className="flex size-44 items-center justify-center rounded-full bg-card/45">
                       <Heart className="size-20 fill-white text-white/80" />
                     </div>
                   </div>
@@ -1223,7 +1249,7 @@ export default function Page() {
             )}
           </div>
         </main>
-        <nav className="fixed right-4 bottom-4 left-4 z-20 grid grid-cols-3 gap-2 rounded-2xl border border-border/70 bg-white/90 p-2 shadow-lg backdrop-blur-md lg:hidden">
+        <nav className="fixed right-4 bottom-4 left-4 z-20 grid grid-cols-3 gap-2 rounded-2xl border border-border/70 bg-card/90 p-2 shadow-lg backdrop-blur-md lg:hidden">
           {navItems.map(({ id, label, icon: Icon }) => (
             <Button
               key={id}

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
   /* Semantic palette. Components should use these roles through the theme. */
@@ -67,6 +68,36 @@
   --rose: #fbe9ed;
   --sage: #e3eee8;
   --sky: #e8ebf7;
+}
+
+.dark {
+  --surface-app: #211d27;
+  --surface-card: #2b2533;
+  --surface-muted: #332c3d;
+  --surface-secondary: #3a3150;
+  --surface-accent: #4a302d;
+  --text-primary: #f7f1f7;
+  --text-secondary: #c5b9c9;
+  --text-on-primary: #211d27;
+  --text-on-secondary: #f3eaff;
+  --text-on-accent: #ffdccc;
+  --action-primary: #b69be0;
+  --action-primary-hover: #c4aceb;
+  --action-primary-pressed: #9f82cc;
+  --action-secondary-hover: #4a3f62;
+  --action-secondary-pressed: #55486f;
+  --border-default: #4a4050;
+  --focus-ring: #c4aceb;
+  --feedback-danger: #ef8da0;
+  --lavender: #453b5b;
+  --apricot: #553b36;
+  --rose: #56343f;
+  --sage: #30483e;
+  --sky: #38405e;
+  --elevation-card:
+    0 1px 2px rgb(0 0 0 / 0.24), 0 8px 24px rgb(0 0 0 / 0.18);
+  --elevation-card-hover: 0 8px 20px -12px rgb(0 0 0 / 0.55);
+  --elevation-card-pressed: 0 2px 8px -6px rgb(0 0 0 / 0.45);
 }
 
 @theme inline {
