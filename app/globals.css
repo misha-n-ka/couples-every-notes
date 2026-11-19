@@ -1,0 +1,232 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  /* Semantic palette. Components should use these roles through the theme. */
+  --surface-app: #fbf8f5;
+  --surface-card: #ffffff;
+  --surface-muted: #f2eef7;
+  --surface-secondary: #ede6f7;
+  --surface-accent: #fae4d7;
+  --text-primary: #302b38;
+  --text-secondary: #665f6f;
+  --text-on-primary: #ffffff;
+  --text-on-secondary: #604887;
+  --text-on-accent: #6d4335;
+  --action-primary: #70579c;
+  --action-primary-hover: #604887;
+  --action-primary-pressed: #513b75;
+  --action-secondary-hover: #e4d9f3;
+  --action-secondary-pressed: #d9c8ee;
+  --border-default: #e6dfe7;
+  --focus-ring: #70579c;
+  --feedback-danger: #a33147;
+
+  /* Compatibility aliases consumed by shadcn-style primitives. */
+  --background: var(--surface-app);
+  --foreground: var(--text-primary);
+  --card: var(--surface-card);
+  --card-foreground: var(--text-primary);
+  --popover: var(--surface-card);
+  --popover-foreground: var(--text-primary);
+  --primary: var(--action-primary);
+  --primary-hover: var(--action-primary-hover);
+  --primary-pressed: var(--action-primary-pressed);
+  --primary-foreground: var(--text-on-primary);
+  --secondary: var(--surface-secondary);
+  --secondary-hover: var(--action-secondary-hover);
+  --secondary-pressed: var(--action-secondary-pressed);
+  --secondary-foreground: var(--text-on-secondary);
+  --muted: var(--surface-muted);
+  --muted-foreground: var(--text-secondary);
+  --accent: var(--surface-accent);
+  --accent-foreground: var(--text-on-accent);
+  --destructive: var(--feedback-danger);
+  --border: var(--border-default);
+  --input: var(--border-default);
+  --ring: var(--focus-ring);
+  --radius: 1rem;
+  --radius-control: 0.75rem;
+  --radius-card: 1.5rem;
+  --radius-pill: 999px;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --elevation-card:
+    0 1px 2px rgb(48 43 56 / 0.06), 0 8px 24px rgb(48 43 56 / 0.04);
+  --elevation-card-hover: 0 8px 20px -12px rgb(48 43 56 / 0.32);
+  --elevation-card-pressed: 0 2px 8px -6px rgb(48 43 56 / 0.28);
+  --motion-fast: 150ms;
+  --shadow-card: var(--elevation-card);
+  --shadow-card-hover: var(--elevation-card-hover);
+  --shadow-card-pressed: var(--elevation-card-pressed);
+  --lavender: #ede6f7;
+  --apricot: #fae4d7;
+  --rose: #fbe9ed;
+  --sage: #e3eee8;
+  --sky: #e8ebf7;
+}
+
+.dark {
+  --surface-app: #211d27;
+  --surface-card: #2b2533;
+  --surface-muted: #332c3d;
+  --surface-secondary: #3a3150;
+  --surface-accent: #4a302d;
+  --text-primary: #f7f1f7;
+  --text-secondary: #c5b9c9;
+  --text-on-primary: #211d27;
+  --text-on-secondary: #f3eaff;
+  --text-on-accent: #ffdccc;
+  --action-primary: #b69be0;
+  --action-primary-hover: #c4aceb;
+  --action-primary-pressed: #9f82cc;
+  --action-secondary-hover: #4a3f62;
+  --action-secondary-pressed: #55486f;
+  --border-default: #4a4050;
+  --focus-ring: #c4aceb;
+  --feedback-danger: #ef8da0;
+  --lavender: #453b5b;
+  --apricot: #553b36;
+  --rose: #56343f;
+  --sage: #30483e;
+  --sky: #38405e;
+  --elevation-card:
+    0 1px 2px rgb(0 0 0 / 0.24), 0 8px 24px rgb(0 0 0 / 0.18);
+  --elevation-card-hover: 0 8px 20px -12px rgb(0 0 0 / 0.55);
+  --elevation-card-pressed: 0 2px 8px -6px rgb(0 0 0 / 0.45);
+}
+
+@theme inline {
+  --color-surface-app: var(--surface-app);
+  --color-surface-card: var(--surface-card);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-secondary: var(--surface-secondary);
+  --color-surface-accent: var(--surface-accent);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-on-primary: var(--text-on-primary);
+  --color-text-on-secondary: var(--text-on-secondary);
+  --color-action-primary: var(--action-primary);
+  --color-action-primary-hover: var(--action-primary-hover);
+  --color-action-primary-pressed: var(--action-primary-pressed);
+  --color-border-default: var(--border-default);
+  --color-focus-ring: var(--focus-ring);
+  --color-feedback-danger: var(--feedback-danger);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-pressed: var(--primary-pressed);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-hover: var(--secondary-hover);
+  --color-secondary-pressed: var(--secondary-pressed);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-lavender: var(--lavender);
+  --color-apricot: var(--apricot);
+  --color-rose: var(--rose);
+  --color-sage: var(--sage);
+  --color-sky: var(--sky);
+  --radius-sm: calc(var(--radius) - 8px);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-4xl: calc(var(--radius) + 16px);
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+[data-slot="button"] {
+  transition:
+    transform var(--motion-fast) ease,
+    background-color var(--motion-fast) ease,
+    border-color var(--motion-fast) ease,
+    box-shadow var(--motion-fast) ease,
+    color var(--motion-fast) ease;
+}
+
+[data-slot="button"]:not(:disabled):active {
+  transform: translateY(1px);
+}
+
+.interactive-surface {
+  transition:
+    transform var(--motion-fast) ease,
+    box-shadow var(--motion-fast) ease,
+    border-color var(--motion-fast) ease;
+}
+
+.interactive-surface:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--elevation-card-hover);
+}
+
+.interactive-surface:active {
+  transform: translateY(0);
+  box-shadow: var(--elevation-card-pressed);
+}
+
+.interactive-surface:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.calendar-wide .rdp-day {
+  height: 3rem;
+  aspect-ratio: auto;
+}
+
+.calendar-wide .rdp-day_button {
+  height: 2.5rem;
+  max-width: 3.5rem;
+  width: 100%;
+  margin-inline: auto;
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+.calendar-wide .rdp-week {
+  margin-top: 0.25rem;
+}
+
+.calendar-wide .rdp-today {
+  background: transparent !important;
+}
+
+.calendar-wide .rdp-day_button:hover,
+.calendar-wide .rdp-day_button:focus {
+  box-shadow: none;
+}
+
+.calendar-wide .rdp-day_button[data-selected-single="true"]:hover {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.calendar-wide .rdp-day_button[data-selected-single="true"] {
+  border-radius: var(--radius-control);
+}
