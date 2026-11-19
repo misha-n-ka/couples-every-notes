@@ -2,11 +2,18 @@ import assert from "node:assert/strict"
 import test from "node:test"
 
 import {
+  formatTimeInput,
   isMineNote,
   isTimedScheduleValid,
   isVisibilityExpansion,
   type Schedule,
 } from "../lib/notes.ts"
+
+test("formats time input as hours and minutes", () => {
+  assert.equal(formatTimeInput("1930"), "19:30")
+  assert.equal(formatTimeInput("19a3"), "19:3")
+  assert.equal(formatTimeInput("12345"), "12:34")
+})
 
 test("accepts a timed event that ends after midnight", () => {
   const schedule: Schedule = {

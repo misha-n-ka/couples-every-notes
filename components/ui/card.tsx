@@ -15,7 +15,7 @@ function Card({
       data-slot="card"
       data-size={size}
       className={cn(
-        "group/card flex flex-col gap-(--card-spacing) overflow-hidden rounded-[var(--radius-card)] bg-card py-(--card-spacing) text-sm text-card-foreground shadow-[var(--shadow-card)] ring-1 ring-foreground/5 [--card-spacing:--spacing(5)] has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(4)] dark:ring-foreground/10 *:[img:first-child]:rounded-t-[var(--radius-card)] *:[img:last-child]:rounded-b-[var(--radius-card)]",
+        "group/card flex flex-col gap-(--card-spacing) overflow-hidden rounded-[var(--radius-card)] bg-surface-card py-(--card-spacing) text-sm text-text-primary shadow-[var(--elevation-card)] ring-1 ring-foreground/5 [--card-spacing:--spacing(5)] has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(4)] dark:ring-foreground/10 *:[img:first-child]:rounded-t-[var(--radius-card)] *:[img:last-child]:rounded-b-[var(--radius-card)]",
         interactive && "interactive-surface cursor-pointer",
         className
       )}

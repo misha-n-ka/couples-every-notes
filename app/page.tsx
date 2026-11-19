@@ -15,7 +15,6 @@ import {
   Home,
   Link as LinkIcon,
   LockKeyhole,
-  Menu,
   MoreHorizontal,
   NotebookPen,
   PartyPopper,
@@ -23,7 +22,6 @@ import {
   Sparkles,
   Trash2,
   Users,
-  X,
 } from "lucide-react"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -63,11 +61,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Textarea } from "@/components/ui/textarea"
 import { Toaster, toast } from "@/components/ui/toast"
 import {
   isMineNote,
+  formatTimeInput,
   isTimedScheduleValid,
   isVisibilityExpansion,
   type NoteAuthor,
@@ -173,7 +177,7 @@ const initialNotes: Note[] = [
   },
 ]
 
-const demoToday = new Date(2026, 10, 15)
+const demoToday = new Date()
 
 const navItems: { id: Section; label: string; icon: LucideIcon }[] = [
   { id: "home", label: "Главная", icon: Home },
@@ -235,7 +239,7 @@ function EventRow({ note, onOpen }: { note: Note; onOpen?: () => void }) {
     <button
       type="button"
       onClick={onOpen}
-      className="interactive-surface flex w-full items-center gap-3 rounded-2xl border border-border/70 bg-white/75 p-3 text-left hover:border-primary/40 hover:bg-lavender/30"
+      className="interactive-surface flex min-w-0 w-full flex-wrap items-center gap-3 rounded-2xl border border-border/70 bg-white/75 p-3 text-left hover:border-primary/40 hover:bg-lavender/30"
     >
       <div className={`size-2.5 rounded-full ${note.color}`} />
       <div className="min-w-0 flex-1">
@@ -261,11 +265,11 @@ function EventCalendarDayButton({
     <div className="relative flex size-full items-center justify-center">
       <CalendarDayButton {...props} />
       {colors.length > 0 && (
-        <span className="pointer-events-none absolute bottom-1 z-20 flex gap-0.5">
+        <span className="pointer-events-none absolute bottom-2 z-30 flex gap-0.5 leading-none">
           {colors.slice(0, 3).map((color, index) => (
             <span
               key={`${color}-${index}`}
-              className={`size-1.5 rounded-full ${color}`}
+              className="size-2 rounded-full bg-primary ring-1 ring-white"
             />
           ))}
         </span>
@@ -456,6 +460,74 @@ function NoteDetailsDialog({
   )
 }
 
+function DateField({
+  value,
+  onChange,
+}: {
+  value: string
+  onChange: (value: string) => void
+}) {
+  const [open, setOpen] = React.useState(false)
+  const selectedDate = value ? new Date(`${value}T00:00:00`) : undefined
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger
+        render={
+          <Button
+            type="button"
+            variant="outline"
+            className="h-9 w-full justify-between rounded-2xl bg-white px-3 font-normal"
+          />
+        }
+      >
+        {selectedDate
+          ? selectedDate.toLocaleDateString("ru-RU", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            })
+          : "Выберите дату"}
+        <CalendarDays className="size-4 text-muted-foreground" />
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-2">
+        <Calendar
+          mode="single"
+          locale={ru}
+          selected={selectedDate}
+          onSelect={(nextDate) => {
+            if (!nextDate) return
+            onChange(dateKey(nextDate))
+            setOpen(false)
+          }}
+          showOutsideDays={false}
+        />
+      </PopoverContent>
+    </Popover>
+  )
+}
+
+function TimeField({
+  value,
+  onChange,
+}: {
+  value: string
+  onChange: (value: string) => void
+}) {
+  return (
+    <Input
+      type="text"
+      value={value}
+      onChange={(event) => onChange(formatTimeInput(event.target.value))}
+      inputMode="numeric"
+      placeholder="19:30"
+      maxLength={5}
+      pattern="(?:[01]\d|2[0-3]):[0-5]\d"
+      aria-label="Время в формате часы и минуты"
+    />
+  )
+}
+
 function AddNoteDialog({
   open,
   onOpenChange,
@@ -531,7 +603,7 @@ function AddNoteDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-hidden rounded-[24px] sm:max-w-lg">
+      <DialogContent className="min-w-0 max-h-[calc(100dvh-2rem)] overflow-visible rounded-[24px] sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>
             {editingNote ? "Редактировать заметку" : "Новая заметка"}
@@ -541,7 +613,7 @@ function AddNoteDialog({
           </DialogDescription>
         </DialogHeader>
         <form
-          className="grid max-h-[calc(90vh-10rem)] gap-4 overflow-y-auto pr-2"
+          className="grid min-w-0 max-h-[calc(100dvh-10rem)] gap-4 overflow-y-auto px-1 pr-3"
           onSubmit={handleSubmit}
         >
           <label className="grid gap-1.5 text-sm font-medium">
@@ -620,22 +692,12 @@ function AddNoteDialog({
             <div className="grid gap-3 rounded-2xl bg-muted/60 p-3">
               <label className="grid gap-1.5 text-sm font-medium">
                 Дата начала
-                <input
-                  type="date"
-                  value={date}
-                  onChange={(event) => setDate(event.target.value)}
-                  className="h-9 rounded-2xl border border-input bg-white px-3 text-sm"
-                />
+                <DateField value={date} onChange={setDate} />
               </label>
               {!allDay && (
                 <label className="grid gap-1.5 text-sm font-medium">
                   Дата окончания
-                  <input
-                    type="date"
-                    value={endDate}
-                    onChange={(event) => setEndDate(event.target.value)}
-                    className="h-9 rounded-2xl border border-input bg-white px-3 text-sm"
-                  />
+                  <DateField value={endDate} onChange={setEndDate} />
                 </label>
               )}
               <label className="flex items-center gap-2 text-sm">
@@ -651,21 +713,11 @@ function AddNoteDialog({
                 <div className="grid grid-cols-2 gap-3">
                   <label className="grid gap-1.5 text-sm font-medium">
                     Начало
-                    <input
-                      type="time"
-                      value={start}
-                      onChange={(event) => setStart(event.target.value)}
-                      className="h-9 rounded-2xl border border-input bg-white px-3 text-sm"
-                    />
+                    <TimeField value={start} onChange={setStart} />
                   </label>
                   <label className="grid gap-1.5 text-sm font-medium">
                     Окончание
-                    <input
-                      type="time"
-                      value={end}
-                      onChange={(event) => setEnd(event.target.value)}
-                      className="h-9 rounded-2xl border border-input bg-white px-3 text-sm"
-                    />
+                    <TimeField value={end} onChange={setEnd} />
                   </label>
                 </div>
               )}
@@ -736,7 +788,6 @@ export default function Page() {
   const [dialogVisibility, setDialogVisibility] =
     React.useState<Visibility>("private")
   const [dialogWithEvent, setDialogWithEvent] = React.useState(false)
-  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
   const [selectedNote, setSelectedNote] = React.useState<Note | undefined>()
   const [detailsOpen, setDetailsOpen] = React.useState(false)
 
@@ -786,7 +837,6 @@ export default function Page() {
 
   const navigate = (nextSection: Section) => {
     setSection(nextSection)
-    setMobileMenuOpen(false)
   }
   const openNewNote = (
     visibility: Visibility = section === "notes" && notesTab === "shared"
@@ -813,6 +863,11 @@ export default function Page() {
       { ...data, ...style, id: `note-${Date.now()}`, author: "me" },
       ...current,
     ])
+    toast.add({
+      title: "Заметка сохранена",
+      description:
+        "Пока она доступна только в этой сессии. Постоянное сохранение появится после подключения авторизации и базы данных.",
+    })
   }
   const editNote = (note: Note) => {
     setEditingNote(note)
@@ -879,25 +934,9 @@ export default function Page() {
             </p>
           </div>
         </aside>
-        <main className="pb-24 lg:ml-[216px] lg:pb-8">
+        <main className="min-w-0 overflow-x-hidden pb-24 lg:ml-[216px] lg:pb-8">
           <header className="sticky top-0 z-40 flex items-center justify-between border-b border-border/60 bg-background px-4 py-4 sm:px-8 lg:px-10">
             <div className="flex items-center gap-3">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full lg:hidden"
-                onClick={() => setMobileMenuOpen((open) => !open)}
-                aria-label={mobileMenuOpen ? "Закрыть меню" : "Открыть меню"}
-              >
-                {mobileMenuOpen ? (
-                  <X className="size-5" />
-                ) : (
-                  <Menu className="size-5" />
-                )}
-                <span className="sr-only">
-                  {mobileMenuOpen ? "Закрыть меню" : "Открыть меню"}
-                </span>
-              </Button>
               <div>
                 <p className="text-xs text-muted-foreground">
                   {formatDemoDate(demoToday)}
@@ -935,7 +974,7 @@ export default function Page() {
               </div>
             </div>
           </header>
-          <div className="mx-auto max-w-[1200px] space-y-8 px-4 py-6 sm:px-8 sm:py-8 lg:px-10">
+          <div className="mx-auto w-full max-w-[1200px] min-w-0 space-y-8 px-4 py-6 sm:px-8 sm:py-8 lg:px-10">
             {section === "home" && (
               <>
                 <section className="grid gap-5 rounded-[28px] bg-gradient-to-br from-lavender to-apricot p-6 sm:p-8 lg:grid-cols-[1.3fr_0.7fr]">
@@ -967,9 +1006,9 @@ export default function Page() {
                     </div>
                   </div>
                 </section>
-                <section className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-                  <Card className="rounded-[24px] border-border/70 shadow-sm">
-                    <CardHeader className="flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <section className="grid min-w-0 gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+                  <Card className="min-w-0 rounded-[24px] border-border/70 shadow-sm">
+                    <CardHeader className="min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <div>
                         <CardTitle>Ближайшие события</CardTitle>
                         <CardDescription>
@@ -985,7 +1024,7 @@ export default function Page() {
                         <ChevronRight className="ml-1 size-4" />
                       </Button>
                     </CardHeader>
-                    <CardContent className="grid gap-3">
+                    <CardContent className="grid min-w-0 gap-3">
                       {homeScheduledNotes.slice(0, 3).map((note) => (
                         <EventRow
                           key={note.id}
@@ -1000,7 +1039,7 @@ export default function Page() {
                       )}
                     </CardContent>
                   </Card>
-                  <Card className="rounded-[24px] border-border/70 shadow-sm">
+                  <Card className="min-w-0 rounded-[24px] border-border/70 shadow-sm">
                     <CardHeader>
                       <CardTitle>Ваши последние заметки</CardTitle>
                       <CardDescription>Идеи, которые рядом</CardDescription>
@@ -1122,8 +1161,8 @@ export default function Page() {
                     Календарь событий
                   </h2>
                 </div>
-                <div className="grid gap-6 xl:grid-cols-2">
-                  <Card className="w-full rounded-[24px] border-border/70 shadow-sm">
+                <div className="grid min-w-0 gap-6 xl:grid-cols-2">
+                  <Card className="min-w-0 w-full rounded-[24px] border-border/70 shadow-sm">
                     <CardContent className="flex justify-center p-3">
                       <Calendar
                         className="calendar-wide mx-auto w-full max-w-[720px]"
@@ -1143,7 +1182,7 @@ export default function Page() {
                       />
                     </CardContent>
                   </Card>
-                  <Card className="rounded-[24px] border-border/70 shadow-sm">
+                  <Card className="min-w-0 rounded-[24px] border-border/70 shadow-sm">
                     <CardHeader>
                       <CardTitle>События на выбранную дату</CardTitle>
                       <CardDescription>
@@ -1197,51 +1236,6 @@ export default function Page() {
             </Button>
           ))}
         </nav>
-        {mobileMenuOpen && (
-          <div
-            className="fixed inset-0 z-30 lg:hidden"
-            role="dialog"
-            aria-label="Мобильное меню"
-          >
-            <button
-              className="absolute inset-0 size-full cursor-default bg-black/30"
-              aria-label="Закрыть меню"
-              onClick={() => setMobileMenuOpen(false)}
-            />
-            <div className="relative h-full w-[280px] bg-background p-6 shadow-xl">
-              <div className="mb-8 flex items-center justify-between">
-                <div>
-                  <p className="font-semibold">Вместе</p>
-                  <p className="text-sm text-muted-foreground">
-                    пространство для двоих
-                  </p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="rounded-full"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <span aria-hidden>×</span>
-                  <span className="sr-only">Закрыть меню</span>
-                </Button>
-              </div>
-              <nav className="grid gap-2">
-                {navItems.map(({ id, label, icon: Icon }) => (
-                  <Button
-                    key={id}
-                    variant={section === id ? "secondary" : "ghost"}
-                    className="justify-start gap-3 rounded-xl"
-                    onClick={() => navigate(id)}
-                  >
-                    <Icon className="size-4" />
-                    {label}
-                  </Button>
-                ))}
-              </nav>
-            </div>
-          </div>
-        )}
         <NoteDetailsDialog
           note={selectedNote}
           open={detailsOpen}

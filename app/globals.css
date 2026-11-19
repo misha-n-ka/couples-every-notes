@@ -1,28 +1,49 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fbf8f5;
-  --foreground: #302b38;
-  --card: #ffffff;
-  --card-foreground: #302b38;
-  --popover: #ffffff;
-  --popover-foreground: #302b38;
-  --primary: #70579c;
-  --primary-hover: #604887;
-  --primary-pressed: #513b75;
-  --primary-foreground: #ffffff;
-  --secondary: #ede6f7;
-  --secondary-hover: #e4d9f3;
-  --secondary-pressed: #d9c8ee;
-  --secondary-foreground: #604887;
-  --muted: #f2eef7;
-  --muted-foreground: #665f6f;
-  --accent: #fae4d7;
-  --accent-foreground: #6d4335;
-  --destructive: #a33147;
-  --border: #e6dfe7;
-  --input: #e6dfe7;
-  --ring: #70579c;
+  /* Semantic palette. Components should use these roles through the theme. */
+  --surface-app: #fbf8f5;
+  --surface-card: #ffffff;
+  --surface-muted: #f2eef7;
+  --surface-secondary: #ede6f7;
+  --surface-accent: #fae4d7;
+  --text-primary: #302b38;
+  --text-secondary: #665f6f;
+  --text-on-primary: #ffffff;
+  --text-on-secondary: #604887;
+  --text-on-accent: #6d4335;
+  --action-primary: #70579c;
+  --action-primary-hover: #604887;
+  --action-primary-pressed: #513b75;
+  --action-secondary-hover: #e4d9f3;
+  --action-secondary-pressed: #d9c8ee;
+  --border-default: #e6dfe7;
+  --focus-ring: #70579c;
+  --feedback-danger: #a33147;
+
+  /* Compatibility aliases consumed by shadcn-style primitives. */
+  --background: var(--surface-app);
+  --foreground: var(--text-primary);
+  --card: var(--surface-card);
+  --card-foreground: var(--text-primary);
+  --popover: var(--surface-card);
+  --popover-foreground: var(--text-primary);
+  --primary: var(--action-primary);
+  --primary-hover: var(--action-primary-hover);
+  --primary-pressed: var(--action-primary-pressed);
+  --primary-foreground: var(--text-on-primary);
+  --secondary: var(--surface-secondary);
+  --secondary-hover: var(--action-secondary-hover);
+  --secondary-pressed: var(--action-secondary-pressed);
+  --secondary-foreground: var(--text-on-secondary);
+  --muted: var(--surface-muted);
+  --muted-foreground: var(--text-secondary);
+  --accent: var(--surface-accent);
+  --accent-foreground: var(--text-on-accent);
+  --destructive: var(--feedback-danger);
+  --border: var(--border-default);
+  --input: var(--border-default);
+  --ring: var(--focus-ring);
   --radius: 1rem;
   --radius-control: 0.75rem;
   --radius-card: 1.5rem;
@@ -33,10 +54,14 @@
   --space-4: 1rem;
   --space-6: 1.5rem;
   --space-8: 2rem;
-  --shadow-card:
+  --elevation-card:
     0 1px 2px rgb(48 43 56 / 0.06), 0 8px 24px rgb(48 43 56 / 0.04);
-  --shadow-card-hover: 0 8px 20px -12px rgb(48 43 56 / 0.32);
-  --shadow-card-pressed: 0 2px 8px -6px rgb(48 43 56 / 0.28);
+  --elevation-card-hover: 0 8px 20px -12px rgb(48 43 56 / 0.32);
+  --elevation-card-pressed: 0 2px 8px -6px rgb(48 43 56 / 0.28);
+  --motion-fast: 150ms;
+  --shadow-card: var(--elevation-card);
+  --shadow-card-hover: var(--elevation-card-hover);
+  --shadow-card-pressed: var(--elevation-card-pressed);
   --lavender: #ede6f7;
   --apricot: #fae4d7;
   --rose: #fbe9ed;
@@ -45,6 +70,21 @@
 }
 
 @theme inline {
+  --color-surface-app: var(--surface-app);
+  --color-surface-card: var(--surface-card);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-secondary: var(--surface-secondary);
+  --color-surface-accent: var(--surface-accent);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-on-primary: var(--text-on-primary);
+  --color-text-on-secondary: var(--text-on-secondary);
+  --color-action-primary: var(--action-primary);
+  --color-action-primary-hover: var(--action-primary-hover);
+  --color-action-primary-pressed: var(--action-primary-pressed);
+  --color-border-default: var(--border-default);
+  --color-focus-ring: var(--focus-ring);
+  --color-feedback-danger: var(--feedback-danger);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -91,11 +131,11 @@ body {
 
 [data-slot="button"] {
   transition:
-    transform 150ms ease,
-    background-color 150ms ease,
-    border-color 150ms ease,
-    box-shadow 150ms ease,
-    color 150ms ease;
+    transform var(--motion-fast) ease,
+    background-color var(--motion-fast) ease,
+    border-color var(--motion-fast) ease,
+    box-shadow var(--motion-fast) ease,
+    color var(--motion-fast) ease;
 }
 
 [data-slot="button"]:not(:disabled):active {
@@ -104,23 +144,23 @@ body {
 
 .interactive-surface {
   transition:
-    transform 150ms ease,
-    box-shadow 150ms ease,
-    border-color 150ms ease;
+    transform var(--motion-fast) ease,
+    box-shadow var(--motion-fast) ease,
+    border-color var(--motion-fast) ease;
 }
 
 .interactive-surface:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-card-hover);
+  box-shadow: var(--elevation-card-hover);
 }
 
 .interactive-surface:active {
   transform: translateY(0);
-  box-shadow: var(--shadow-card-pressed);
+  box-shadow: var(--elevation-card-pressed);
 }
 
 .interactive-surface:focus-visible {
-  outline: 2px solid var(--ring);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -154,4 +194,8 @@ body {
 .calendar-wide .rdp-day_button[data-selected-single="true"]:hover {
   background: var(--primary);
   color: var(--primary-foreground);
+}
+
+.calendar-wide .rdp-day_button[data-selected-single="true"] {
+  border-radius: var(--radius-control);
 }
